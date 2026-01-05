@@ -1,0 +1,6 @@
+@BuildWeek2_HostAddress = http://localhost:5056
+
+GET {{BuildWeek2_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
