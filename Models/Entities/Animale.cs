@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 public class Animale
 {
-    [Key] 
+    [Key]
     public Guid AnimaleId { get; set; }
 
     [Required]
