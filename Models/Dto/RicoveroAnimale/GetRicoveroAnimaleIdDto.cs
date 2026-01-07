@@ -1,11 +1,12 @@
-﻿namespace BuildWeek2.Models.Dto.RicoveroAnimale
+﻿namespace BuildWeek2.Models.Dto.RicoveroAnimale;
+
+public class GetRicoveroAnimaleIdDto
 {
-    public class GetRicoveroAnimaleIdDto
-    {
-        public Guid RicoveroAnimaleId { get; set; }
-        public DateTime DataInizioRicovero { get; set; }
-        public DateTime? DataFineRicovero { get; set; }
-        public bool Attivo { get; set; }
-        public Guid AnimaleId { get; set; }
-    }
+    public Guid RicoveroAnimaleId { get; set; }
+    public DateTime DataInizioRicovero { get; set; }
+    public DateTime? DataFineRicovero { get; set; }
+    public bool Attivo { get; set; }
+    public Guid AnimaleId { get; set; }
+    public string NomeAnimale { get; set; }
+
 }

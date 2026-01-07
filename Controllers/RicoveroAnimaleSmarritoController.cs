@@ -21,14 +21,14 @@ namespace BuildWeek2.Controllers
             _context = context;
         }
 
-        // GET: api/RicoveroAnimaleSmarrito
+        // GET: api/RicoveroAnimaleSmarritoes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RicoveroAnimaleSmarrito>>> GetRicoveriAnimaliSmarriti()
         {
             return await _context.RicoveriAnimaliSmarriti.ToListAsync();
         }
 
-        // GET: api/RicoveroAnimaleSmarrito/5
+        // GET: api/RicoveroAnimaleSmarritoes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RicoveroAnimaleSmarrito>> GetRicoveroAnimaleSmarrito(Guid id)
         {
@@ -42,7 +42,7 @@ namespace BuildWeek2.Controllers
             return ricoveroAnimaleSmarrito;
         }
 
-        // PUT: api/RicoveroAnimaleSmarrito/5
+        // PUT: api/RicoveroAnimaleSmarritoes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRicoveroAnimaleSmarrito(Guid id, RicoveroAnimaleSmarrito ricoveroAnimaleSmarrito)
@@ -73,7 +73,7 @@ namespace BuildWeek2.Controllers
             return NoContent();
         }
 
-        // POST: api/RicoveroAnimaleSmarrito
+        // POST: api/RicoveroAnimaleSmarritoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<RicoveroAnimaleSmarrito>> PostRicoveroAnimaleSmarrito(RicoveroAnimaleSmarrito ricoveroAnimaleSmarrito)
@@ -84,7 +84,7 @@ namespace BuildWeek2.Controllers
             return CreatedAtAction("GetRicoveroAnimaleSmarrito", new { id = ricoveroAnimaleSmarrito.RicoveroAnimaleSmarritoId }, ricoveroAnimaleSmarrito);
         }
 
-        // DELETE: api/RicoveroAnimaleSmarrito/5
+        // DELETE: api/RicoveroAnimaleSmarritoes/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRicoveroAnimaleSmarrito(Guid id)
         {

@@ -4,13 +4,8 @@ namespace BuildWeek2.Models.Dto.Animale
 {
     public class CreateAnimaleDto
     {
-        [Required]
         public DateTime DataRegistrazione { get; set; }
-
-        [Required]
         public string Nome { get; set; }
-
-        [Required]
         public string Tipologia { get; set; }
 
         public string ColoreMantello { get; set; }
