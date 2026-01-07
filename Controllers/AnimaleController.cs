@@ -4,6 +4,7 @@ using BuildWeek2.Data;
 using BuildWeek2.Models.Dto.Animale;
 
 namespace BuildWeek2.Controllers;
+// API controller for managing "Animale" entities
 
 [Route("api/[controller]")]
 [ApiController]
