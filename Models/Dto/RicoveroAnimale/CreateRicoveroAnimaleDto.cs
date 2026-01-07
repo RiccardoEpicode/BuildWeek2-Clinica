@@ -11,5 +11,6 @@
         public Guid AnimaleId { get; set; }
 
 
+
     }
 }

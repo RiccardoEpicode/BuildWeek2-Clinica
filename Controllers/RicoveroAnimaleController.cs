@@ -82,7 +82,7 @@ namespace BuildWeek2.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RicoveroAnimaleExists(id))
+                if (! await RicoveroAnimaleExists(id))
                 {
                     return NotFound();
                 }
@@ -98,8 +98,16 @@ namespace BuildWeek2.Controllers
         // POST: api/RicoveroAnimales
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RicoveroAnimale>> PostRicoveroAnimale(RicoveroAnimale ricoveroAnimale)
+        public async Task<ActionResult<RicoveroAnimale>> PostRicoveroAnimale(CreateRicoveroAnimaleDto ricoveroAnimaleDto)
         {
+            var ricoveroAnimale = new RicoveroAnimale
+            {
+                //RicoveroAnimaleId = Guid.NewGuid(),
+                DataInizioRicovero = ricoveroAnimaleDto.DataInizioRicovero,
+                DataFineRicovero = ricoveroAnimaleDto.DataFineRicovero,
+                Attivo = ricoveroAnimaleDto.Attivo,
+                AnimaleId = ricoveroAnimaleDto.AnimaleId
+            };
             _context.RicoveriAnimali.Add(ricoveroAnimale);
             await _context.SaveChangesAsync();
 
@@ -122,9 +130,9 @@ namespace BuildWeek2.Controllers
             return NoContent();
         }
 
-        private bool RicoveroAnimaleExists(Guid id)
+        private async Task<bool> RicoveroAnimaleExists(Guid id)
         {
-            return _context.RicoveriAnimali.Any(e => e.RicoveroAnimaleId == id);
+            return await _context.RicoveriAnimali.AnyAsync(e => e.RicoveroAnimaleId == id);
         }
     }
 }
