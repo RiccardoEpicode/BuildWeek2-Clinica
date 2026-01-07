@@ -22,16 +22,16 @@ public class RicoveroAnimaleController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetRicoveroAnimaleDto>>> GetRicoveriAnimali()
     {
-    var ricoveroAnimali = await _context.RicoveriAnimali
-            .Select(r => new GetRicoveroAnimaleDto
-            {
-                RicoveroAnimaleId = r.RicoveroAnimaleId,
-                DataInizioRicovero = r.DataInizioRicovero,
-                DataFineRicovero = r.DataFineRicovero,
-                Attivo = r.Attivo,
-                NomeAnimale = r.Animale.Nome
-            })
-            .ToListAsync();
+        var ricoveroAnimali = await _context.RicoveriAnimali
+                .Select(r => new GetRicoveroAnimaleDto
+                {
+                    RicoveroAnimaleId = r.RicoveroAnimaleId,
+                    DataInizioRicovero = r.DataInizioRicovero,
+                    DataFineRicovero = r.DataFineRicovero,
+                    Attivo = r.Attivo,
+                    NomeAnimale = r.Animale.Nome
+                })
+                .ToListAsync();
         return Ok(ricoveroAnimali);
     }
 
@@ -52,7 +52,8 @@ public class RicoveroAnimaleController : ControllerBase
             })
             .FirstOrDefaultAsync();
 
-        if (ricoveroAnimaleId == null) { 
+        if (ricoveroAnimaleId == null)
+        {
             return NotFound();
         }
         return Ok(ricoveroAnimaleId);
@@ -64,120 +65,30 @@ public class RicoveroAnimaleController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRicoveroAnimale(Guid id, UpdateRicoveroAnimaleDto ricoveroAnimaleDto)
     {
-       var ricoveroAnimale = await _context.RicoveriAnimali.FindAsync(id);
+        var ricoveroAnimale = await _context.RicoveriAnimali.FindAsync(id);
         if (ricoveroAnimale == null)
         {
             return NotFound();
         }
 
         {
-<<<<<<< HEAD
+
             ricoveroAnimale.DataInizioRicovero = ricoveroAnimaleDto.DataInizioRicovero;
             ricoveroAnimale.DataFineRicovero = ricoveroAnimaleDto.DataFineRicovero;
             ricoveroAnimale.Attivo = ricoveroAnimaleDto.Attivo;
-=======
-            var ricoveroAnimali = await _context.RicoveriAnimali
-                    .Select(r => new GetRicoveroAnimaleDto
-                    {
-                        RicoveroAnimaleId = r.RicoveroAnimaleId,
-                        DataInizioRicovero = r.DataInizioRicovero,
-                        DataFineRicovero = r.DataFineRicovero,
-                        Attivo = r.Attivo,
-                        AnimaleId = r.AnimaleId,
-                        NomeAnimale = r.Animale.Nome
-                    })
-                    .ToListAsync();
-            return Ok(ricoveroAnimali);
->>>>>>> 8bc3e0e013868a840b55cca4051ce7314a36fd45
+
         }
-        
+
 
         _context.Entry(ricoveroAnimale).State = EntityState.Modified;
 
         try
         {
-<<<<<<< HEAD
-=======
-            var ricoveroAnimaleId = await _context.RicoveriAnimali
-                .Where(r => r.RicoveroAnimaleId == id)
-                .Select(r => new GetRicoveroAnimaleIdDto
-                {
-                    RicoveroAnimaleId = r.RicoveroAnimaleId,
-                    DataInizioRicovero = r.DataInizioRicovero,
-                    DataFineRicovero = r.DataFineRicovero,
-                    Attivo = r.Attivo,
-                    AnimaleId = r.AnimaleId,
-                    NomeAnimale = r.Animale.Nome
-
-                })
-                .FirstOrDefaultAsync();
-
-            if (ricoveroAnimaleId == null)
-            {
-                return NotFound();
-            }
-            return Ok(ricoveroAnimaleId);
-        }
-
-
-        // PUT: api/RicoveroAnimales/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRicoveroAnimale(Guid id, UpdateRicoveroAnimaleDto ricoveroAnimaleDto)
-        {
-            var ricoveroAnimale = await _context.RicoveriAnimali.FindAsync(id);
-            if (ricoveroAnimale == null)
-            {
-                return NotFound();
-            }
-
-            {
-                ricoveroAnimale.DataInizioRicovero = ricoveroAnimaleDto.DataInizioRicovero;
-                ricoveroAnimale.DataFineRicovero = ricoveroAnimaleDto.DataFineRicovero;
-                ricoveroAnimale.Attivo = ricoveroAnimaleDto.Attivo;
-            }
-
-            _context.Entry(ricoveroAnimale).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await RicoveroAnimaleExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/RicoveroAnimales
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<RicoveroAnimale>> PostRicoveroAnimale(CreateRicoveroAnimaleDto ricoveroAnimaleDto)
-        {
-            var ricoveroAnimale = new RicoveroAnimale
-            {
-                //RicoveroAnimaleId = Guid.NewGuid(),
-                DataInizioRicovero = ricoveroAnimaleDto.DataInizioRicovero,
-                DataFineRicovero = ricoveroAnimaleDto.DataFineRicovero,
-                Attivo = ricoveroAnimaleDto.Attivo,
-                AnimaleId = ricoveroAnimaleDto.AnimaleId
-            };
-            _context.RicoveriAnimali.Add(ricoveroAnimale);
->>>>>>> 8bc3e0e013868a840b55cca4051ce7314a36fd45
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (! await RicoveroAnimaleExists(id))
+            if (!await RicoveroAnimaleExists(id))
             {
                 return NotFound();
             }
