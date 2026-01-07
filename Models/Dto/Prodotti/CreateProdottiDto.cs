@@ -9,5 +9,6 @@ namespace BuildWeek2.Models.Dto.Prodotti
         public string Usi { get; set; }
         public int CodiceArmadietto { get; set; }
         public int CodiceCassetto { get; set; }
+        public Guid FornitoreId { get; set; }
     }
 }

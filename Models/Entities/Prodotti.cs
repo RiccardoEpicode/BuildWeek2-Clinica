@@ -16,7 +16,7 @@ public class Prodotti
     public int CodiceCassetto { get; set; }
 
     [Required]
-    public string FornitoreId { get; set; }
+    public Guid FornitoreId { get; set; }
     public Fornitore Fornitore { get; set; }
     public ICollection<Vendita> Vendite { get; set; } = new List<Vendita>();
 }
