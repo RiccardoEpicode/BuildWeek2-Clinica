@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BuildWeek2.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Farmacista : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -242,15 +242,14 @@ namespace BuildWeek2.Migrations
                     Usi = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CodiceArmadietto = table.Column<int>(type: "int", nullable: false),
                     CodiceCassetto = table.Column<int>(type: "int", nullable: false),
-                    FornitoreId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FornitoreId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    FornitoreId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Prodotti", x => x.ProdottiId);
                     table.ForeignKey(
-                        name: "FK_Prodotti_Fornitori_FornitoreId1",
-                        column: x => x.FornitoreId1,
+                        name: "FK_Prodotti_Fornitori_FornitoreId",
+                        column: x => x.FornitoreId,
                         principalTable: "Fornitori",
                         principalColumn: "FornitoreId",
                         onDelete: ReferentialAction.Cascade);
@@ -294,14 +293,15 @@ namespace BuildWeek2.Migrations
                     NumeroRicetta = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProdottiId = table.Column<int>(type: "int", nullable: false),
                     ProdottiId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FarmacistaId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    FarmacistaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FarmacistaId1 = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vendite", x => x.VenditaId);
                     table.ForeignKey(
-                        name: "FK_Vendite_AspNetUsers_FarmacistaId",
-                        column: x => x.FarmacistaId,
+                        name: "FK_Vendite_AspNetUsers_FarmacistaId1",
+                        column: x => x.FarmacistaId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -353,9 +353,9 @@ namespace BuildWeek2.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Prodotti_FornitoreId1",
+                name: "IX_Prodotti_FornitoreId",
                 table: "Prodotti",
-                column: "FornitoreId1");
+                column: "FornitoreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RicoveriAnimali_AnimaleId",
@@ -363,9 +363,9 @@ namespace BuildWeek2.Migrations
                 column: "AnimaleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vendite_FarmacistaId",
+                name: "IX_Vendite_FarmacistaId1",
                 table: "Vendite",
-                column: "FarmacistaId");
+                column: "FarmacistaId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vendite_ProdottiId1",

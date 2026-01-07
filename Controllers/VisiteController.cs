@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BuildWeek2.Data;
 using BuildWeek2.Models.Entities;
+using BuildWeek2.Models.Dto.Visita;
 
 namespace BuildWeek2.Controllers
 {
@@ -23,44 +24,62 @@ namespace BuildWeek2.Controllers
 
         // GET: api/Visitas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Visita>>> GetVisite()
+        public async Task<ActionResult<IEnumerable<GetVisitaDto>>> GetVisite()
         {
-            return await _context.Visite.ToListAsync();
+            var visite = await _context.Visite
+                .Select(v => new GetVisitaDto
+                {
+                    VisitaId = v.VisitaId,
+                    DataVisita = v.DataVisita,
+                    EsameEffettuato = v.EsameEffettuato,
+                    DescrizioneEsame = v.DescrizioneEsame
+                })
+                .ToListAsync();
+            return Ok(visite);
         }
 
         // GET: api/Visitas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Visita>> GetVisita(Guid id)
+        public async Task<ActionResult<GetVisitaIdDto>> GetVisitaIdDto(Guid id)
         {
-            var visita = await _context.Visite.FindAsync(id);
-
+            var visita = await _context.Visite
+                .Where(v => v.VisitaId == id)
+                .Select(v => new GetVisitaIdDto
+                {
+                    VisitaId = v.VisitaId,
+                    DataVisita = v.DataVisita,
+                    EsameEffettuato = v.EsameEffettuato,
+                    DescrizioneEsame = v.DescrizioneEsame
+                })
+                .FirstOrDefaultAsync();
             if (visita == null)
-            {
+                {
                 return NotFound();
             }
-
-            return visita;
+            return Ok(visita);
         }
 
         // PUT: api/Visitas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVisita(Guid id, Visita visita)
+        public async Task<IActionResult> PutVisita(Guid id, UpdateVisitaDto updateVisitaDto)
         {
-            if (id != visita.VisitaId)
+            var visita = await _context.Visite.FindAsync(id);
+            if (visita == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
+            visita.DataVisita = updateVisitaDto.DataVisita;
+            visita.EsameEffettuato = updateVisitaDto.EsameEffettuato;
+            visita.DescrizioneEsame = updateVisitaDto.DescrizioneEsame;
             _context.Entry(visita).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VisitaExists(id))
+                if (! await VisitaExists(id))
                 {
                     return NotFound();
                 }
@@ -69,19 +88,27 @@ namespace BuildWeek2.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
         // POST: api/Visitas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Visita>> PostVisita(Visita visita)
+        public async Task<ActionResult<Visita>> PostVisitaDto(CreateVisitaDto createVisitaDto)
         {
+            var visita = new Visita
+            {
+                VisitaId = createVisitaDto.VisitaId,
+                DataVisita = createVisitaDto.DataVisita,
+                EsameEffettuato = createVisitaDto.EsameEffettuato,
+                DescrizioneEsame = createVisitaDto.DescrizioneEsame,
+                RicoveroAnimaleSmarritoId = createVisitaDto.RicoveroAnimaleSmarritoId,
+                AnimaleId = createVisitaDto.AnimaleId
+            };
             _context.Visite.Add(visita);
             await _context.SaveChangesAsync();
+            return CreatedAtAction("GetVisitaIdDto", new { id = visita.VisitaId }, visita);
 
-            return CreatedAtAction("GetVisita", new { id = visita.VisitaId }, visita);
         }
 
         // DELETE: api/Visitas/5
@@ -100,9 +127,9 @@ namespace BuildWeek2.Controllers
             return NoContent();
         }
 
-        private bool VisitaExists(Guid id)
+        private async Task<bool> VisitaExists(Guid id)
         {
-            return _context.Visite.Any(e => e.VisitaId == id);
+            return  await _context.Visite.AnyAsync(e => e.VisitaId == id);
         }
     }
 }

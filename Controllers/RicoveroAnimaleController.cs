@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using BuildWeek2.Data;
 using BuildWeek2.Models.Entities;
 using BuildWeek2.Models.Dto.RicoveroAnimale;
-using BuildWeek2.Models.Dto.Animale;
-
 namespace BuildWeek2.Controllers;
 
 [Route("api/[controller]")]

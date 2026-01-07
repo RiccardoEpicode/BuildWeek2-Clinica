@@ -6,5 +6,7 @@
         public DateTime DataVisita { get; set; }
         public string EsameEffettuato { get; set; }
         public string? DescrizioneEsame { get; set; }
+        public Guid AnimaleId { get; set; }
+        public Guid? RicoveroAnimaleSmarritoId { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuildWeek2.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260107115046_reinitialize")]
-    partial class reinitialize
+    [Migration("20260107163315_Farmacista")]
+    partial class Farmacista
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -178,11 +178,7 @@ namespace BuildWeek2.Migrations
                     b.Property<int>("CodiceCassetto")
                         .HasColumnType("int");
 
-                    b.Property<string>("FornitoreId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("FornitoreId1")
+                    b.Property<Guid>("FornitoreId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Medicinale")
@@ -198,7 +194,7 @@ namespace BuildWeek2.Migrations
 
                     b.HasKey("ProdottiId");
 
-                    b.HasIndex("FornitoreId1");
+                    b.HasIndex("FornitoreId");
 
                     b.ToTable("Prodotti");
                 });
@@ -276,7 +272,10 @@ namespace BuildWeek2.Migrations
                     b.Property<DateTime>("DataVendita")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FarmacistaId")
+                    b.Property<Guid>("FarmacistaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FarmacistaId1")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -291,7 +290,7 @@ namespace BuildWeek2.Migrations
 
                     b.HasKey("VenditaId");
 
-                    b.HasIndex("FarmacistaId");
+                    b.HasIndex("FarmacistaId1");
 
                     b.HasIndex("ProdottiId1");
 
@@ -466,7 +465,7 @@ namespace BuildWeek2.Migrations
                 {
                     b.HasOne("BuildWeek2.Models.Entities.Fornitore", "Fornitore")
                         .WithMany("Prodotti")
-                        .HasForeignKey("FornitoreId1")
+                        .HasForeignKey("FornitoreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -488,7 +487,7 @@ namespace BuildWeek2.Migrations
                 {
                     b.HasOne("BuildWeek2.Data.ApplicationUser", "Farmacista")
                         .WithMany()
-                        .HasForeignKey("FarmacistaId")
+                        .HasForeignKey("FarmacistaId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

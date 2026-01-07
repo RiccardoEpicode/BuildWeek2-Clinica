@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BuildWeek2.Data;
 using BuildWeek2.Models.Entities;
+using BuildWeek2.Models.Dto.Vendita;
 
 namespace BuildWeek2.Controllers
 {
@@ -23,44 +24,62 @@ namespace BuildWeek2.Controllers
 
         // GET: api/Venditas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vendita>>> GetVendite()
+        public async Task<ActionResult<IEnumerable<GetVenditaDto>>> GetVendite()
         {
-            return await _context.Vendite.ToListAsync();
+           var vendite = await _context.Vendite
+                .Select(v => new GetVenditaDto
+                {
+                    VenditaId = v.VenditaId,
+                    DataVendita = v.DataVendita,
+                    CodiceFiscale = v.CodiceFiscale,
+                    NumeroRicetta = v.NumeroRicetta
+                })
+                .ToListAsync();
+            return Ok(vendite);
         }
 
         // GET: api/Venditas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Vendita>> GetVendita(Guid id)
+        public async Task<ActionResult<GetVenditaIdDto>> GetVendita(Guid id)
         {
-            var vendita = await _context.Vendite.FindAsync(id);
-
+            var vendita = await _context.Vendite
+                .Where(v => v.VenditaId == id)
+                .Select(v => new GetVenditaIdDto
+                {
+                    VenditaId = v.VenditaId,
+                    DataVendita = v.DataVendita,
+                    CodiceFiscale = v.CodiceFiscale,
+                    NumeroRicetta = v.NumeroRicetta
+                })
+                .FirstOrDefaultAsync();
             if (vendita == null)
-            {
+                {
                 return NotFound();
             }
-
-            return vendita;
+            return Ok(vendita);
         }
 
         // PUT: api/Venditas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVendita(Guid id, Vendita vendita)
+        public async Task<IActionResult> PutVenditaDto(Guid id, UpdateVenditaDto updateVenditaDto)
         {
-            if (id != vendita.VenditaId)
+            var vendita = await _context.Vendite.FindAsync(id);
+            if (vendita == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
+            vendita.DataVendita = updateVenditaDto.DataVendita;
+            vendita.CodiceFiscale = updateVenditaDto.CodiceFiscale;
+            vendita.NumeroRicetta = updateVenditaDto.NumeroRicetta;
             _context.Entry(vendita).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VenditaExists(id))
+                if (! await VenditaExists(id))
                 {
                     return NotFound();
                 }
@@ -69,19 +88,27 @@ namespace BuildWeek2.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
         // POST: api/Venditas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Vendita>> PostVendita(Vendita vendita)
+        public async Task<ActionResult<Vendita>> PostVenditaDto(CreateVenditaDto createVenditaDto)
         {
+            var vendita = new Vendita
+            {
+                VenditaId = Guid.NewGuid(),
+                DataVendita = createVenditaDto.DataVendita,
+                CodiceFiscale = createVenditaDto.CodiceFiscale,
+                NumeroRicetta = createVenditaDto.NumeroRicetta,
+                ProdottiId = createVenditaDto.ProdottiId,
+                FarmacistaId = createVenditaDto.FarmacistaId
+            };
             _context.Vendite.Add(vendita);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetVendita", new { id = vendita.VenditaId }, vendita);
+
         }
 
         // DELETE: api/Venditas/5
@@ -100,9 +127,9 @@ namespace BuildWeek2.Controllers
             return NoContent();
         }
 
-        private bool VenditaExists(Guid id)
+        private async Task<bool> VenditaExists(Guid id)
         {
-            return _context.Vendite.Any(e => e.VenditaId == id);
+            return await _context.Vendite.AnyAsync(e => e.VenditaId == id);
         }
     }
 }

@@ -20,6 +20,6 @@ public class Vendita
     public Prodotti Prodotti { get; set; }
 
     [Required]
-    public string FarmacistaId { get; set; }
+    public Guid FarmacistaId { get; set; }
     public ApplicationUser Farmacista { get; set; }
 }
