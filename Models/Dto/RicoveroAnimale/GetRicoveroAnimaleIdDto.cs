@@ -7,5 +7,6 @@
         public DateTime? DataFineRicovero { get; set; }
         public bool Attivo { get; set; }
         public Guid AnimaleId { get; set; }
+        public string NomeAnimale { get; set; }
     }
 }

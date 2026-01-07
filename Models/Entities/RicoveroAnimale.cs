@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace BuildWeek2.Models.Entities
 {
@@ -14,6 +14,6 @@ namespace BuildWeek2.Models.Entities
 
         [Required]
         public Guid AnimaleId { get; set; }
-        public Animale Animale { get; set; }    
+        public Animale Animale { get; set; }
     }
 }

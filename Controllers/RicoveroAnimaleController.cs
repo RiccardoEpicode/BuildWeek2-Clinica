@@ -22,15 +22,17 @@ namespace BuildWeek2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetRicoveroAnimaleDto>>> GetRicoveriAnimali()
         {
-        var ricoveroAnimali = await _context.RicoveriAnimali
-                .Select(r => new GetRicoveroAnimaleDto
-                {
-                    RicoveroAnimaleId = r.RicoveroAnimaleId,
-                    DataInizioRicovero = r.DataInizioRicovero,
-                    DataFineRicovero = r.DataFineRicovero,
-                    Attivo = r.Attivo,
-                })
-                .ToListAsync();
+            var ricoveroAnimali = await _context.RicoveriAnimali
+                    .Select(r => new GetRicoveroAnimaleDto
+                    {
+                        RicoveroAnimaleId = r.RicoveroAnimaleId,
+                        DataInizioRicovero = r.DataInizioRicovero,
+                        DataFineRicovero = r.DataFineRicovero,
+                        Attivo = r.Attivo,
+                        AnimaleId = r.AnimaleId,
+                        NomeAnimale = r.Animale.Nome
+                    })
+                    .ToListAsync();
             return Ok(ricoveroAnimali);
         }
 
@@ -46,11 +48,14 @@ namespace BuildWeek2.Controllers
                     DataInizioRicovero = r.DataInizioRicovero,
                     DataFineRicovero = r.DataFineRicovero,
                     Attivo = r.Attivo,
-                    AnimaleId = r.AnimaleId
+                    AnimaleId = r.AnimaleId,
+                    NomeAnimale = r.Animale.Nome
+
                 })
                 .FirstOrDefaultAsync();
 
-            if (ricoveroAnimaleId == null) { 
+            if (ricoveroAnimaleId == null)
+            {
                 return NotFound();
             }
             return Ok(ricoveroAnimaleId);
@@ -62,7 +67,7 @@ namespace BuildWeek2.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRicoveroAnimale(Guid id, UpdateRicoveroAnimaleDto ricoveroAnimaleDto)
         {
-           var ricoveroAnimale = await _context.RicoveriAnimali.FindAsync(id);
+            var ricoveroAnimale = await _context.RicoveriAnimali.FindAsync(id);
             if (ricoveroAnimale == null)
             {
                 return NotFound();
@@ -82,7 +87,7 @@ namespace BuildWeek2.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (! await RicoveroAnimaleExists(id))
+                if (!await RicoveroAnimaleExists(id))
                 {
                     return NotFound();
                 }
