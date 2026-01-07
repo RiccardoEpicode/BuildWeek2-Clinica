@@ -7,11 +7,11 @@ namespace BuildWeek2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AnimalesController : ControllerBase
+    public class AnimaleController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public AnimalesController(AppDbContext context)
+        public AnimaleController(AppDbContext context)
         {
             _context = context;
         }
