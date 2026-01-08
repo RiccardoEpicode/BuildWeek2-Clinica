@@ -62,6 +62,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
+
 //----------------------------------------------------------------
 //AUTENTICAZIONE SWAGGER TOKEN AMMINISTRATORE
 

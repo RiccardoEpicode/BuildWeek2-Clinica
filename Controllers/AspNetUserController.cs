@@ -9,6 +9,8 @@ using System.Security.Claims;
 
 namespace BuildWeek2.Controllers
 {
+    //[ApiExplorerSettings(GroupName = "Auth")]
+    //[Tags("Auth - Login & Register")]
     [Route("api/[controller]")]
     [ApiController]
     public class AspNetUserController : ControllerBase
