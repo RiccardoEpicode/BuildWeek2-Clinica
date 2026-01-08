@@ -16,7 +16,7 @@ public class Vendita
     public string? NumeroRicetta { get; set; }
 
     [Required]
-    public int ProdottiId { get; set; }
+    public Guid ProdottiId { get; set; }
     public Prodotti Prodotti { get; set; }
 
     [Required]

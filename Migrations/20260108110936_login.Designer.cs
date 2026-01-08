@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuildWeek2.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260107163315_Farmacista")]
-    partial class Farmacista
+    [Migration("20260108110936_login")]
+    partial class login
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -282,17 +282,14 @@ namespace BuildWeek2.Migrations
                     b.Property<string>("NumeroRicetta")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProdottiId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ProdottiId1")
+                    b.Property<Guid>("ProdottiId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("VenditaId");
 
                     b.HasIndex("FarmacistaId1");
 
-                    b.HasIndex("ProdottiId1");
+                    b.HasIndex("ProdottiId");
 
                     b.ToTable("Vendite");
                 });
@@ -493,7 +490,7 @@ namespace BuildWeek2.Migrations
 
                     b.HasOne("BuildWeek2.Models.Entities.Prodotti", "Prodotti")
                         .WithMany("Vendite")
-                        .HasForeignKey("ProdottiId1")
+                        .HasForeignKey("ProdottiId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

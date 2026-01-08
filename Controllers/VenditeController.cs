@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BuildWeek2.Data;
 using BuildWeek2.Models.Entities;
 using BuildWeek2.Models.Dto.Vendita;
+using System.Security.Claims;
 
 namespace BuildWeek2.Controllers
 {
@@ -26,15 +27,15 @@ namespace BuildWeek2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetVenditaDto>>> GetVendite()
         {
-           var vendite = await _context.Vendite
-                .Select(v => new GetVenditaDto
-                {
-                    VenditaId = v.VenditaId,
-                    DataVendita = v.DataVendita,
-                    CodiceFiscale = v.CodiceFiscale,
-                    NumeroRicetta = v.NumeroRicetta
-                })
-                .ToListAsync();
+            var vendite = await _context.Vendite
+                 .Select(v => new GetVenditaDto
+                 {
+                     VenditaId = v.VenditaId,
+                     DataVendita = v.DataVendita,
+                     CodiceFiscale = v.CodiceFiscale,
+                     NumeroRicetta = v.NumeroRicetta
+                 })
+                 .ToListAsync();
             return Ok(vendite);
         }
 
@@ -53,7 +54,7 @@ namespace BuildWeek2.Controllers
                 })
                 .FirstOrDefaultAsync();
             if (vendita == null)
-                {
+            {
                 return NotFound();
             }
             return Ok(vendita);
@@ -79,7 +80,7 @@ namespace BuildWeek2.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (! await VenditaExists(id))
+                if (!await VenditaExists(id))
                 {
                     return NotFound();
                 }
@@ -96,6 +97,11 @@ namespace BuildWeek2.Controllers
         [HttpPost]
         public async Task<ActionResult<Vendita>> PostVenditaDto(CreateVenditaDto createVenditaDto)
         {
+            var FarmacistaId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (FarmacistaId == null)
+            {
+                return Unauthorized();
+            }
             var vendita = new Vendita
             {
                 VenditaId = Guid.NewGuid(),
@@ -103,7 +109,7 @@ namespace BuildWeek2.Controllers
                 CodiceFiscale = createVenditaDto.CodiceFiscale,
                 NumeroRicetta = createVenditaDto.NumeroRicetta,
                 ProdottiId = createVenditaDto.ProdottiId,
-                FarmacistaId = createVenditaDto.FarmacistaId
+                FarmacistaId = Guid.Parse(FarmacistaId)
             };
             _context.Vendite.Add(vendita);
             await _context.SaveChangesAsync();

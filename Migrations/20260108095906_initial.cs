@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BuildWeek2.Migrations
 {
     /// <inheritdoc />
-    public partial class Farmacista : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -291,8 +291,7 @@ namespace BuildWeek2.Migrations
                     DataVendita = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CodiceFiscale = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
                     NumeroRicetta = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProdottiId = table.Column<int>(type: "int", nullable: false),
-                    ProdottiId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProdottiId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FarmacistaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FarmacistaId1 = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -306,8 +305,8 @@ namespace BuildWeek2.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Vendite_Prodotti_ProdottiId1",
-                        column: x => x.ProdottiId1,
+                        name: "FK_Vendite_Prodotti_ProdottiId",
+                        column: x => x.ProdottiId,
                         principalTable: "Prodotti",
                         principalColumn: "ProdottiId",
                         onDelete: ReferentialAction.Cascade);
@@ -368,9 +367,9 @@ namespace BuildWeek2.Migrations
                 column: "FarmacistaId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vendite_ProdottiId1",
+                name: "IX_Vendite_ProdottiId",
                 table: "Vendite",
-                column: "ProdottiId1");
+                column: "ProdottiId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Visite_AnimaleId",

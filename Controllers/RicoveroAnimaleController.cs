@@ -104,6 +104,11 @@ public class RicoveroAnimaleController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<RicoveroAnimale>> PostRicoveroAnimale(CreateRicoveroAnimaleDto ricoveroAnimaleDto)
     {
+        var animaleExists = await _context.Animali.AnyAsync(a => a.AnimaleId == ricoveroAnimaleDto.AnimaleId);
+        if (!animaleExists)
+        {
+            return BadRequest("L'animale specificato non esiste.");
+        }
         var ricoveroAnimale = new RicoveroAnimale
         {
             DataInizioRicovero = ricoveroAnimaleDto.DataInizioRicovero,
