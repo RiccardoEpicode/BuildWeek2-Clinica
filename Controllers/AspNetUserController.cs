@@ -1,6 +1,5 @@
 ﻿using BuildWeek2.Data;
 using BuildWeek2.Models.Dto;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -45,6 +44,7 @@ namespace BuildWeek2.Controllers
                         UserName = registerRequestDto.Email,
                         Email = registerRequestDto.Email,
                         NomeCompleto = registerRequestDto.NomeCompleto,
+                        CodiceFiscale = registerRequestDto.CodiceFiscale,
                         EmailConfirmed = true,
                         LockoutEnabled = false
 
@@ -66,6 +66,7 @@ namespace BuildWeek2.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+
             return BadRequest("Errore nella registrazione dell'utente.");
         }
 
@@ -114,8 +115,8 @@ namespace BuildWeek2.Controllers
                 var tokenExpiration = DateTime.Now.AddMinutes(30);
 
                 JwtSecurityToken jwt = new JwtSecurityToken(
-                    "https://", //Issuer
-                    "https://", //Audience
+                    "Https://", //Issuer
+                    "Https://", //Audience
                     claims: userClaims,
                     expires: tokenExpiration,
                     signingCredentials: cred
