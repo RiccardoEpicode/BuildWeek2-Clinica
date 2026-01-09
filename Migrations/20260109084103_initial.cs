@@ -87,21 +87,19 @@ namespace BuildWeek2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RicoveriAnimaliSmarriti",
+                name: "Visite",
                 columns: table => new
                 {
-                    RicoveroAnimaleSmarritoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DataInizioRicoveroSmarrito = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataFineRicoveroSmarrito = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Tipologia = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ColoreMantello = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DataNascita = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    NumeroMicrochip = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Attivo = table.Column<bool>(type: "bit", nullable: false)
+                    VisitaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DataVisita = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EsameEffettuato = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DescrizioneEsame = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AnimaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    RicoveroAnimaleSmarritoId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RicoveriAnimaliSmarriti", x => x.RicoveroAnimaleSmarritoId);
+                    table.PrimaryKey("PK_Visite", x => x.VisitaId);
                 });
 
             migrationBuilder.CreateTable(
@@ -255,31 +253,51 @@ namespace BuildWeek2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Visite",
+                name: "AnimaleVisita",
                 columns: table => new
                 {
-                    VisitaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DataVisita = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EsameEffettuato = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DescrizioneEsame = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AnimaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RicoveroAnimaleSmarritoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    AnimaliAnimaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VisiteVisitaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Visite", x => x.VisitaId);
+                    table.PrimaryKey("PK_AnimaleVisita", x => new { x.AnimaliAnimaleId, x.VisiteVisitaId });
                     table.ForeignKey(
-                        name: "FK_Visite_Animali_AnimaleId",
-                        column: x => x.AnimaleId,
+                        name: "FK_AnimaleVisita_Animali_AnimaliAnimaleId",
+                        column: x => x.AnimaliAnimaleId,
                         principalTable: "Animali",
                         principalColumn: "AnimaleId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Visite_RicoveriAnimaliSmarriti_RicoveroAnimaleSmarritoId",
-                        column: x => x.RicoveroAnimaleSmarritoId,
-                        principalTable: "RicoveriAnimaliSmarriti",
-                        principalColumn: "RicoveroAnimaleSmarritoId",
+                        name: "FK_AnimaleVisita_Visite_VisiteVisitaId",
+                        column: x => x.VisiteVisitaId,
+                        principalTable: "Visite",
+                        principalColumn: "VisitaId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RicoveriAnimaliSmarriti",
+                columns: table => new
+                {
+                    RicoveroAnimaleSmarritoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DataInizioRicoveroSmarrito = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataFineRicoveroSmarrito = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Tipologia = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ColoreMantello = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataNascita = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    NumeroMicrochip = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Attivo = table.Column<bool>(type: "bit", nullable: false),
+                    VisitaId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RicoveriAnimaliSmarriti", x => x.RicoveroAnimaleSmarritoId);
+                    table.ForeignKey(
+                        name: "FK_RicoveriAnimaliSmarriti_Visite_VisitaId",
+                        column: x => x.VisitaId,
+                        principalTable: "Visite",
+                        principalColumn: "VisitaId");
                 });
 
             migrationBuilder.CreateTable(
@@ -309,6 +327,11 @@ namespace BuildWeek2.Migrations
                         principalColumn: "ProdottiId",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnimaleVisita_VisiteVisitaId",
+                table: "AnimaleVisita",
+                column: "VisiteVisitaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -360,6 +383,11 @@ namespace BuildWeek2.Migrations
                 column: "AnimaleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RicoveriAnimaliSmarriti_VisitaId",
+                table: "RicoveriAnimaliSmarriti",
+                column: "VisitaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vendite_FarmacistaId",
                 table: "Vendite",
                 column: "FarmacistaId");
@@ -368,21 +396,14 @@ namespace BuildWeek2.Migrations
                 name: "IX_Vendite_ProdottiId",
                 table: "Vendite",
                 column: "ProdottiId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Visite_AnimaleId",
-                table: "Visite",
-                column: "AnimaleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Visite_RicoveroAnimaleSmarritoId",
-                table: "Visite",
-                column: "RicoveroAnimaleSmarritoId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AnimaleVisita");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -402,25 +423,25 @@ namespace BuildWeek2.Migrations
                 name: "RicoveriAnimali");
 
             migrationBuilder.DropTable(
+                name: "RicoveriAnimaliSmarriti");
+
+            migrationBuilder.DropTable(
                 name: "Vendite");
 
             migrationBuilder.DropTable(
-                name: "Visite");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Animali");
+
+            migrationBuilder.DropTable(
+                name: "Visite");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Prodotti");
-
-            migrationBuilder.DropTable(
-                name: "Animali");
-
-            migrationBuilder.DropTable(
-                name: "RicoveriAnimaliSmarriti");
 
             migrationBuilder.DropTable(
                 name: "Fornitori");

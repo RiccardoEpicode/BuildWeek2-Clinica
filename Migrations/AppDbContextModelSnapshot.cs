@@ -61,6 +61,21 @@ namespace BuildWeek2.Migrations
                     b.ToTable("Animali");
                 });
 
+            modelBuilder.Entity("AnimaleVisita", b =>
+                {
+                    b.Property<Guid>("AnimaliAnimaleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("VisiteVisitaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AnimaliAnimaleId", "VisiteVisitaId");
+
+                    b.HasIndex("VisiteVisitaId");
+
+                    b.ToTable("AnimaleVisita");
+                });
+
             modelBuilder.Entity("BuildWeek2.Data.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -247,7 +262,12 @@ namespace BuildWeek2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("VisitaId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("RicoveroAnimaleSmarritoId");
+
+                    b.HasIndex("VisitaId");
 
                     b.ToTable("RicoveriAnimaliSmarriti");
                 });
@@ -291,7 +311,7 @@ namespace BuildWeek2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AnimaleId")
+                    b.Property<Guid?>("AnimaleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DataVisita")
@@ -304,14 +324,10 @@ namespace BuildWeek2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RicoveroAnimaleSmarritoId")
+                    b.Property<Guid?>("RicoveroAnimaleSmarritoId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("VisitaId");
-
-                    b.HasIndex("AnimaleId");
-
-                    b.HasIndex("RicoveroAnimaleSmarritoId");
 
                     b.ToTable("Visite");
                 });
@@ -449,6 +465,21 @@ namespace BuildWeek2.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AnimaleVisita", b =>
+                {
+                    b.HasOne("Animale", null)
+                        .WithMany()
+                        .HasForeignKey("AnimaliAnimaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BuildWeek2.Models.Entities.Visita", null)
+                        .WithMany()
+                        .HasForeignKey("VisiteVisitaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BuildWeek2.Models.Entities.Prodotti", b =>
                 {
                     b.HasOne("BuildWeek2.Models.Entities.Fornitore", "Fornitore")
@@ -471,6 +502,13 @@ namespace BuildWeek2.Migrations
                     b.Navigation("Animale");
                 });
 
+            modelBuilder.Entity("BuildWeek2.Models.Entities.RicoveroAnimaleSmarrito", b =>
+                {
+                    b.HasOne("BuildWeek2.Models.Entities.Visita", null)
+                        .WithMany("RicoveroAnimaleSmarriti")
+                        .HasForeignKey("VisitaId");
+                });
+
             modelBuilder.Entity("BuildWeek2.Models.Entities.Vendita", b =>
                 {
                     b.HasOne("BuildWeek2.Data.ApplicationUser", "Farmacista")
@@ -488,25 +526,6 @@ namespace BuildWeek2.Migrations
                     b.Navigation("Farmacista");
 
                     b.Navigation("Prodotti");
-                });
-
-            modelBuilder.Entity("BuildWeek2.Models.Entities.Visita", b =>
-                {
-                    b.HasOne("Animale", "Animale")
-                        .WithMany("Visite")
-                        .HasForeignKey("AnimaleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BuildWeek2.Models.Entities.RicoveroAnimaleSmarrito", "RicoveroAnimaleSmarrito")
-                        .WithMany()
-                        .HasForeignKey("RicoveroAnimaleSmarritoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Animale");
-
-                    b.Navigation("RicoveroAnimaleSmarrito");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -560,11 +579,6 @@ namespace BuildWeek2.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Animale", b =>
-                {
-                    b.Navigation("Visite");
-                });
-
             modelBuilder.Entity("BuildWeek2.Models.Entities.Fornitore", b =>
                 {
                     b.Navigation("Prodotti");
@@ -573,6 +587,11 @@ namespace BuildWeek2.Migrations
             modelBuilder.Entity("BuildWeek2.Models.Entities.Prodotti", b =>
                 {
                     b.Navigation("Vendite");
+                });
+
+            modelBuilder.Entity("BuildWeek2.Models.Entities.Visita", b =>
+                {
+                    b.Navigation("RicoveroAnimaleSmarriti");
                 });
 #pragma warning restore 612, 618
         }

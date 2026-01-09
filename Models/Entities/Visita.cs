@@ -13,11 +13,10 @@ public class Visita
     public string EsameEffettuato { get; set; }
     public string? DescrizioneEsame { get; set; }
 
-    [Required]
-    public Guid AnimaleId { get; set; }
-    public Animale Animale { get; set; }
+    
+    public Guid? AnimaleId { get; set; }
+    public ICollection<Animale> Animali { get; set; } = new List<Animale>();
 
-    [Required]
     public Guid? RicoveroAnimaleSmarritoId { get; set; }
-    public RicoveroAnimaleSmarrito? RicoveroAnimaleSmarrito { get; set; }
+    public ICollection<RicoveroAnimaleSmarrito> RicoveroAnimaleSmarriti { get; set; } = new List<RicoveroAnimaleSmarrito>();
 }
