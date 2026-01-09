@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
+using BuildWeek2.Services.Interfaces;
+using BuildWeek2.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,13 +17,11 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 );
 
 // Services
+builder.Services.AddScoped<IAnimaleService, AnimaleService>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
-builder.Services.AddScoped<UserManager<ApplicationUser>>(); //Gestione utenti
-builder.Services.AddScoped<SignInManager<ApplicationUser>>(); //Gestione accessi
-builder.Services.AddScoped<RoleManager<IdentityRole>>(); //Gestione ruolibuilder.Services.AddEndpointsApiExplorer();
 
 
 // Identity
@@ -39,7 +39,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
     .AddDefaultTokenProviders();
 
 //Configuration JWT
-//builder.Services.AddAuthentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -62,9 +61,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-
-
-//AUTENTICAZIONE SWAGGER TOKEN AMMINISTRATORE
 
 builder.Services.AddSwaggerGen(option =>
 {
