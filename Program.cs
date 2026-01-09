@@ -48,8 +48,8 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateIssuer = false,
+        ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = "Https://",
@@ -64,7 +64,6 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 
-//----------------------------------------------------------------
 //AUTENTICAZIONE SWAGGER TOKEN AMMINISTRATORE
 
 builder.Services.AddSwaggerGen(option =>

@@ -5,140 +5,140 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace BuildWeek2.Controllers
 {
-    //[ApiExplorerSettings(GroupName = "Auth")]
-    //[Tags("Auth - Login & Register")]
+    [Tags("Auth - Login & Register")]
     [Route("api/[controller]")]
     [ApiController]
     public class AspNetUserController : ControllerBase
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-
+        private readonly IConfiguration _config; // Serve a leggere i valori di appsettings.json
 
         public AspNetUserController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _config = config;
         }
 
-
-        //ENDPOINTS 
-        //REGISTRAZIONE 
+        // ENDPOINTS
+        // REGISTRAZIONE
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequestDto registerRequestDto)
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    ApplicationUser user = new ApplicationUser()
-                    {
-                        UserName = registerRequestDto.Email,
-                        Email = registerRequestDto.Email,
-                        NomeCompleto = registerRequestDto.NomeCompleto,
-                        CodiceFiscale = registerRequestDto.CodiceFiscale,
-                        EmailConfirmed = true,
-                        LockoutEnabled = false
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-                    };
-                    IdentityResult result = await _userManager.CreateAsync(user, registerRequestDto.Password);
-                    if (result.Succeeded)
-                    {
-                        var roleExists = await _roleManager.RoleExistsAsync("User");
-                        if (!roleExists)
-                        {
-                            await _roleManager.CreateAsync(new IdentityRole("User"));
-                        }
-                        await _userManager.AddToRoleAsync(user, "User");
-                        return Ok("Utente registrato con successo!");
-                    }
-                }
+                var user = new ApplicationUser
+                {
+                    UserName = registerRequestDto.Email,
+                    Email = registerRequestDto.Email,
+                    NomeCompleto = registerRequestDto.NomeCompleto,
+                    CodiceFiscale = registerRequestDto.CodiceFiscale,
+                    EmailConfirmed = true,
+                    LockoutEnabled = false
+                };
+
+                var result = await _userManager.CreateAsync(user, registerRequestDto.Password);
+
+                if (!result.Succeeded)
+                    return BadRequest(result.Errors);
+
+                // CREA RUOLO SE NON ESISTE
+                if (!await _roleManager.RoleExistsAsync("User"))
+                    await _roleManager.CreateAsync(new IdentityRole("User"));
+
+                if (!await _roleManager.RoleExistsAsync("Farmacista"))
+                    await _roleManager.CreateAsync(new IdentityRole("Farmacista"));
+
+                await _userManager.AddToRoleAsync(user, "User");
+
+                return Ok("Registrazione completata con successo");
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(500, new
+                {
+                    error = ex.InnerException?.Message,
+                    fullError = ex.Message
+                });
             }
-
-            return BadRequest("Errore nella registrazione dell'utente.");
         }
 
 
-
-        //LOGIN 
+        //Login + Generazione token       
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequestDto loginRequestDto)
+        public async Task<IActionResult> Login(LoginRequestDto dto)
         {
             try
             {
-                ApplicationUser user = await _userManager.FindByNameAsync(loginRequestDto.Username);
-                //controllo se l'utente esiste
-                if (user is null)
-                { return BadRequest(); }
+                var user = await _userManager.FindByNameAsync(dto.Username);
 
-                //controllo login 
-                var result = await _signInManager.PasswordSignInAsync(user, loginRequestDto.Password, false, false);
+                if (user == null)
+                    return Unauthorized("Credenziali non valide");
 
-                if (!result.Succeeded)
+                var passwordValid = await _signInManager.CheckPasswordSignInAsync(
+                    user, dto.Password, false);
+
+                if (!passwordValid.Succeeded)
+                    return Unauthorized("Credenziali non valide");
+
+                var roles = await _userManager.GetRolesAsync(user);
+
+                // CLAIMS
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+
+                foreach (var role in roles)
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+
+                // JWT
+                var key = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+                );
+
+                var credentials = new SigningCredentials(
+                    key, SecurityAlgorithms.HmacSha256);
+
+                var expiration = DateTime.UtcNow.AddMinutes(30);
+
+                var token = new JwtSecurityToken(
+                    issuer: _config["Jwt:Issuer"],
+                    audience: _config["Jwt:Audience"],
+                    claims: claims,
+                    expires: expiration,
+                    signingCredentials: credentials
+                );
+
+                return Ok(new LoginResponseDto
                 {
-                    return StatusCode(StatusCodes.Status401Unauthorized);
-                }
-
-                //Ruoli 
-                List<string> roles = (await this._userManager.GetRolesAsync(user)).ToList();
-
-                //Claims
-                List<Claim> userClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Email, user.Email)
-                };
-                foreach (string roleName in roles)
-                {
-                    userClaims.Add(new Claim(ClaimTypes.Role, roleName));
-                }
-
-
-                //Generazione token
-                var key = System.Text.Encoding.UTF8.GetBytes("7134e3acff05c9585aefc36e7067bffaf24ac5784d06925b456a1544060dc5c9f5b0a5b1");
-                SigningCredentials cred = new SigningCredentials(new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256);
-
-                var tokenExpiration = DateTime.Now.AddMinutes(30);
-
-                JwtSecurityToken jwt = new JwtSecurityToken(
-                    "Https://", //Issuer
-                    "Https://", //Audience
-                    claims: userClaims,
-                    expires: tokenExpiration,
-                    signingCredentials: cred
-                    );
-
-                string token = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-                return Ok(new LoginResponseDto()
-                {
-                    Token = token,
-                    Expiration = tokenExpiration
-
+                    Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    Expiration = expiration
                 });
-
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-
+                // LOG opzionale: ex.Message
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Errore interno durante il login");
             }
         }
+
     }
 }
-
-

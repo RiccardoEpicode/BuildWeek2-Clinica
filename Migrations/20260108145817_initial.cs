@@ -49,7 +49,6 @@ namespace BuildWeek2.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NomeCompleto = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     DataNascita = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CodiceFiscale = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
@@ -292,15 +291,14 @@ namespace BuildWeek2.Migrations
                     CodiceFiscale = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
                     NumeroRicetta = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProdottiId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FarmacistaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FarmacistaId1 = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    FarmacistaId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vendite", x => x.VenditaId);
                     table.ForeignKey(
-                        name: "FK_Vendite_AspNetUsers_FarmacistaId1",
-                        column: x => x.FarmacistaId1,
+                        name: "FK_Vendite_AspNetUsers_FarmacistaId",
+                        column: x => x.FarmacistaId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -362,9 +360,9 @@ namespace BuildWeek2.Migrations
                 column: "AnimaleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vendite_FarmacistaId1",
+                name: "IX_Vendite_FarmacistaId",
                 table: "Vendite",
-                column: "FarmacistaId1");
+                column: "FarmacistaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vendite_ProdottiId",

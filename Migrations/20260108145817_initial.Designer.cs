@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuildWeek2.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260108110936_login")]
-    partial class login
+    [Migration("20260108145817_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,9 +71,6 @@ namespace BuildWeek2.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodiceFiscale")
                         .IsRequired()
@@ -272,10 +269,7 @@ namespace BuildWeek2.Migrations
                     b.Property<DateTime>("DataVendita")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("FarmacistaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FarmacistaId1")
+                    b.Property<string>("FarmacistaId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -287,7 +281,7 @@ namespace BuildWeek2.Migrations
 
                     b.HasKey("VenditaId");
 
-                    b.HasIndex("FarmacistaId1");
+                    b.HasIndex("FarmacistaId");
 
                     b.HasIndex("ProdottiId");
 
@@ -484,7 +478,7 @@ namespace BuildWeek2.Migrations
                 {
                     b.HasOne("BuildWeek2.Data.ApplicationUser", "Farmacista")
                         .WithMany()
-                        .HasForeignKey("FarmacistaId1")
+                        .HasForeignKey("FarmacistaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

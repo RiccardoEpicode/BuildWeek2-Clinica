@@ -9,6 +9,7 @@ using BuildWeek2.Data;
 using BuildWeek2.Models.Entities;
 using BuildWeek2.Models.Dto.Vendita;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BuildWeek2.Controllers
 {
@@ -93,29 +94,41 @@ namespace BuildWeek2.Controllers
         }
 
         // POST: api/Venditas
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Farmacista")]
         [HttpPost]
-        public async Task<ActionResult<Vendita>> PostVenditaDto(CreateVenditaDto createVenditaDto)
+        public async Task<IActionResult> Create(CreateVenditaDto dto)
         {
-            var FarmacistaId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (FarmacistaId == null)
-            {
-                return Unauthorized();
-            }
+            // Prendo ID farmacista dal token
+            var farmacistaId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (farmacistaId == null)
+                return Unauthorized("Token non valido");
+
+            // Controllo FK Prodotto
+            var prodotto = await _context.Prodotti
+                .FirstOrDefaultAsync(p => p.ProdottiId == dto.ProdottiId);
+
+            if (prodotto == null)
+                return BadRequest("Prodotto non esistente");
+
+            // Creo la vendita
             var vendita = new Vendita
             {
                 VenditaId = Guid.NewGuid(),
-                DataVendita = createVenditaDto.DataVendita,
-                CodiceFiscale = createVenditaDto.CodiceFiscale,
-                NumeroRicetta = createVenditaDto.NumeroRicetta,
-                ProdottiId = createVenditaDto.ProdottiId,
-                FarmacistaId = Guid.Parse(FarmacistaId)
+                DataVendita = dto.DataVendita,
+                CodiceFiscale = dto.CodiceFiscale,
+                NumeroRicetta = dto.NumeroRicetta,
+                ProdottiId = dto.ProdottiId,
+                FarmacistaId = farmacistaId
             };
+
+            // Salvo
             _context.Vendite.Add(vendita);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetVendita", new { id = vendita.VenditaId }, vendita);
 
+            return Ok(vendita);
         }
+
+
 
         // DELETE: api/Venditas/5
         [HttpDelete("{id}")]

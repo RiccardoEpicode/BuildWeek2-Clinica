@@ -6,5 +6,4 @@ public class CreateVenditaDto
     public string CodiceFiscale { get; set; }
     public string? NumeroRicetta { get; set; }
     public Guid ProdottiId { get; set; }
-    public Guid FarmacistaId { get; set; }
 }

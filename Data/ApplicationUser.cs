@@ -5,9 +5,7 @@ namespace BuildWeek2.Data
 {
     public class ApplicationUser :IdentityUser
     {
-        [Key]
-        public Guid ApplicationUserId { get; set; }
-        [Required(ErrorMessage ="Nome e Cognome sono obbligatori!")]
+       [Required(ErrorMessage ="Nome e Cognome sono obbligatori!")]
        [MaxLength(100)]
        public string NomeCompleto { get; set; }
        [Required]
