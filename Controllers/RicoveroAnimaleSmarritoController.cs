@@ -1,145 +1,87 @@
 ﻿
+using BuildWeek2.Data;
+using BuildWeek2.Models.Dto.RicoveroAnimale;
+using BuildWeek2.Models.Dto.RicoveroAnimaleSmarrito;
+using BuildWeek2.Models.Entities;
+using BuildWeek2.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BuildWeek2.Data;
-using BuildWeek2.Models.Entities;
-using BuildWeek2.Models.Dto.RicoveroAnimaleSmarrito;
 namespace BuildWeek2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class RicoveroAnimaleSmarritoController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IRicoveroAnimaleSmarritoService _service;
 
-        public RicoveroAnimaleSmarritoController(AppDbContext context)
+        public RicoveroAnimaleSmarritoController(IRicoveroAnimaleSmarritoService service)
         {
-            _context = context;
+            _service = service;
         }
-
-        // GET: api/RicoveroAnimaleSmarritoes
+        // GET: api/Animales
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetAnimaleSmarritoDto>>> GetRicoveriAnimaliSmarriti()
+
+        public async Task<ActionResult<IEnumerable<GetAnimaleSmarritoDto>>> GetAnimaliSmarritiRicoverati()
         {
-            var ricoveroAnimaliSmarriti = await _context.RicoveriAnimaliSmarriti
-                    .Select(r => new GetAnimaleSmarritoDto
-                    {
-                        RicoveroAnimaleSmarritoId = r.RicoveroAnimaleSmarritoId,
-                        DataInizioRicoveroSmarrito = r.DataInizioRicoveroSmarrito,
-                        DataFineRicoveroSmarrito = r.DataFineRicoveroSmarrito,
-                        Tipologia = r.Tipologia,
-                        ColoreMantello = r.ColoreMantello,
-                        DataNascita = r.DataNascita,
-                        NumeroMicrochip = r.NumeroMicrochip,
-                        Attivo = r.Attivo
-                    })
-                    .ToListAsync();
-            return Ok(ricoveroAnimaliSmarriti);
+            var animaliSmarritiRicoverati = await _service.GetAllAnimaliRicoverati();
+            return Ok(animaliSmarritiRicoverati);
         }
 
-        // GET: api/RicoveroAnimaleSmarritoes/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GetAnimaleSmarritoIdDto>> GetRicoveroAnimaleSmarrito(Guid id)
-        { 
-            var ricoveroAnimaleSmarrito = await _context.RicoveriAnimaliSmarriti
-                .Where(r => r.RicoveroAnimaleSmarritoId == id)
-                .Select(r => new GetAnimaleSmarritoIdDto
-                {
-                    RicoveroAnimaleSmarritoId = r.RicoveroAnimaleSmarritoId,
-                    DataInizioRicoveroSmarrito = r.DataInizioRicoveroSmarrito,
-                    DataFineRicoveroSmarrito = r.DataFineRicoveroSmarrito,
-                    Tipologia = r.Tipologia,
-                    ColoreMantello = r.ColoreMantello,
-                    DataNascita = r.DataNascita,
-                    NumeroMicrochip = r.NumeroMicrochip,
-                    Attivo = r.Attivo
-                })
-                .FirstOrDefaultAsync();
-            if (ricoveroAnimaleSmarrito == null)
+        [HttpGet("{Id:guid}")]
+
+        public async Task<ActionResult<GetAnimaleSmarritoIdDto>> GetAnimaliSmarritiRicoveratiById(Guid Id)
+        {
+            var animaleSmarritoRicoverato = await _service.GetAnimaliSmarritiRicoveratiById(Id);
+            if (animaleSmarritoRicoverato == null)
             {
                 return NotFound();
             }
-            return Ok(ricoveroAnimaleSmarrito);
-
+            return Ok(animaleSmarritoRicoverato);
         }
 
-        // PUT: api/RicoveroAnimaleSmarritoes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRicoveroAnimaleSmarrito(Guid id, UpdateAnimaleSmarritoDto updateAnimaleSmarritoDto)
-        {
-            var ricoveroAnimaleSmarrito = await _context.RicoveriAnimaliSmarriti.FindAsync(id);
-            if (ricoveroAnimaleSmarrito == null)
-            {
-                return NotFound();
-            }
-            ricoveroAnimaleSmarrito.DataInizioRicoveroSmarrito = updateAnimaleSmarritoDto.DataInizioRicoveroSmarrito;
-            ricoveroAnimaleSmarrito.DataFineRicoveroSmarrito = updateAnimaleSmarritoDto.DataFineRicoveroSmarrito;
-            ricoveroAnimaleSmarrito.Tipologia = updateAnimaleSmarritoDto.Tipologia;
-            ricoveroAnimaleSmarrito.ColoreMantello = updateAnimaleSmarritoDto.ColoreMantello;
-            ricoveroAnimaleSmarrito.DataNascita = updateAnimaleSmarritoDto.DataNascita;
-            ricoveroAnimaleSmarrito.NumeroMicrochip = updateAnimaleSmarritoDto.NumeroMicrochip;
-            ricoveroAnimaleSmarrito.Attivo = updateAnimaleSmarritoDto.Attivo;
-            _context.Entry(ricoveroAnimaleSmarrito).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (! await RicoveroAnimaleSmarritoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return NoContent();
-        }
-
-        // POST: api/RicoveroAnimaleSmarritoes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RicoveroAnimaleSmarrito>> PostRicoveroAnimaleSmarritoDto(CreateAnimaleSmarritoDto createAnimaleSmarritoDto)
+        public async Task<ActionResult<CreateAnimaleSmarritoDto>> CreateAnimaleSmarritoRicoverato(CreateAnimaleSmarritoDto animaleSmarritoDto)
         {
             var ricoveroAnimaleSmarrito = new RicoveroAnimaleSmarrito
             {
-                RicoveroAnimaleSmarritoId = Guid.NewGuid(),
-                DataInizioRicoveroSmarrito = createAnimaleSmarritoDto.DataInizioRicoveroSmarrito,
-                DataFineRicoveroSmarrito = createAnimaleSmarritoDto.DataFineRicoveroSmarrito,
-                Tipologia = createAnimaleSmarritoDto.Tipologia,
-                ColoreMantello = createAnimaleSmarritoDto.ColoreMantello,
-                DataNascita = createAnimaleSmarritoDto.DataNascita,
-                NumeroMicrochip = createAnimaleSmarritoDto.NumeroMicrochip,
-                Attivo = createAnimaleSmarritoDto.Attivo
+                DataInizioRicoveroSmarrito = animaleSmarritoDto.DataInizioRicoveroSmarrito,
+                DataFineRicoveroSmarrito = animaleSmarritoDto.DataFineRicoveroSmarrito,
+                Tipologia = animaleSmarritoDto.Tipologia,
+                ColoreMantello = animaleSmarritoDto.ColoreMantello,
+                DataNascita = animaleSmarritoDto.DataNascita,
+                NumeroMicrochip = animaleSmarritoDto.NumeroMicrochip,
+                Attivo = animaleSmarritoDto.Attivo
             };
-            _context.RicoveriAnimaliSmarriti.Add(ricoveroAnimaleSmarrito);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetRicoveroAnimaleSmarrito", new { id = ricoveroAnimaleSmarrito.RicoveroAnimaleSmarritoId }, ricoveroAnimaleSmarrito);
-
+            await _service.CreateAnimaliSmarritiRicoveratiAsync(ricoveroAnimaleSmarrito);
+            return CreatedAtAction(nameof(GetAnimaliSmarritiRicoveratiById), new { Id = ricoveroAnimaleSmarrito.RicoveroAnimaleSmarritoId }, animaleSmarritoDto);
 
         }
-            // DELETE: api/RicoveroAnimaleSmarritoes/5
-            [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRicoveroAnimaleSmarrito(Guid id)
+        //PUT
+        [HttpPut("{Id:guid}")]
+        public async Task<IActionResult> UpdateAnimaliRicoverati(Guid Id, UpdateAnimaleSmarritoDto animaleSmarritoDto)
         {
-            var ricoveroAnimaleSmarrito = await _context.RicoveriAnimaliSmarriti.FindAsync(id);
-            if (ricoveroAnimaleSmarrito == null)
+            var existingRicoveroAnimale = await _service.GetAnimaliSmarritiRicoveratiById(Id);
+            if (existingRicoveroAnimale == null)
             {
                 return NotFound();
             }
-
-            _context.RicoveriAnimaliSmarriti.Remove(ricoveroAnimaleSmarrito);
-            await _context.SaveChangesAsync();
-
+            existingRicoveroAnimale.DataInizioRicoveroSmarrito = animaleSmarritoDto.DataInizioRicoveroSmarrito;
+            existingRicoveroAnimale.DataFineRicoveroSmarrito = animaleSmarritoDto.DataFineRicoveroSmarrito;
+            existingRicoveroAnimale.Tipologia = animaleSmarritoDto.Tipologia;
+            existingRicoveroAnimale.ColoreMantello = animaleSmarritoDto.ColoreMantello;
+            existingRicoveroAnimale.DataNascita = animaleSmarritoDto.DataNascita;
+            existingRicoveroAnimale.NumeroMicrochip = animaleSmarritoDto.NumeroMicrochip;
+            existingRicoveroAnimale.Attivo = animaleSmarritoDto.Attivo;
+            await _service.UpdateAnimaliSmarritiRicoveratiAsync(existingRicoveroAnimale);
             return NoContent();
+
         }
 
-        private async Task<bool> RicoveroAnimaleSmarritoExists(Guid id)
+        [HttpDelete("{Id:guid}")]
+        public async Task<IActionResult> DeleteFornitore(Guid Id)
         {
-            return await _context.RicoveriAnimaliSmarriti.AnyAsync(e => e.RicoveroAnimaleSmarritoId == id);
+            await _service.DeleteAnimaliRicoveratiAsync(Id);
+            return NoContent();
         }
     }
 }

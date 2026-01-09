@@ -18,6 +18,10 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 
 // Services
 builder.Services.AddScoped<IAnimaleService, AnimaleService>();
+builder.Services.AddScoped<IProdottiService, ProdottiService>();
+builder.Services.AddScoped<IFornitoreService, FornitoriService>();
+builder.Services.AddScoped<IRicoveroAnimaleService, RicoveroAnimaleService>();
+builder.Services.AddScoped<IRicoveroAnimaleSmarritoService, RicoveroAnimaleSmarritoService>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;

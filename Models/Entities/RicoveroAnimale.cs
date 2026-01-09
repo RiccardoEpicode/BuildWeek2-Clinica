@@ -13,9 +13,8 @@ public class RicoveroAnimale
     public DateTime? DataFineRicovero { get; set; }
     public bool Attivo { get; set; }
 
-    [Required]
-    public Guid AnimaleId { get; set; }
-    public Animale Animale { get; set; }
+    public Guid? AnimaleId { get; set; }
+    public Animale? Animale { get; set; }
 
 }
 
